@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রো স্মার্ট অ্যালার্ম অ্যাপ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>⏰ প্রো স্মার্ট অ্যালার্ম</h1>
+        
+        <!-- বর্তমান সময় দেখার ঘর -->
+        <div id="clock">00:00:00 AM</div>
+
+        <!-- ব্রাউজারের অডিও পারমিশন চালু করার টেস্ট বাটন -->
+        <div class="permission-box">
+            <button id="testSoundBtn" style="background: #007bff; margin-bottom: 10px; width: 100%;">🔊 অডিও চালু করতে এখানে একবার চাপুন</button>
+        </div>
+
+        <!-- অ্যালার্ম সেট বা এডিট করার ফর্ম -->
+        <div class="alarm-form">
+            <input type="hidden" id="editIndex" value="-1"> <!-- এডিট করার জন্য ইনপুট -->
+            <input type="time" id="alarmTime" required>
+            <input type="text" id="alarmLabel" placeholder="অ্যালার্মের নাম (যেমন: School)">
+            
+            <!-- রিংটোন ফাইল সিলেক্ট করার অপশন -->
+            <label class="file-upload-label">
+                📁 রিংটোন ফাইল (MP3) সিলেক্ট করুন:
+                <input type="file" id="ringtoneInput" accept="audio/*">
+            </label>
+
+            <!-- বারের নাম সিলেক্ট করার অপশন -->
+            <div class="days-selector">
+                <label><input type="checkbox" value="1" class="day-chk"> সোম</label>
+                <label><input type="checkbox" value="2" class="day-chk"> মঙ্গল</label>
+                <label><input type="checkbox" value="3" class="day-chk"> বুধ</label>
+                <label><input type="checkbox" value="4" class="day-chk"> বৃহস্পতি</label>
+                <label><input type="checkbox" value="5" class="day-chk"> শুক্র</label>
+                <label><input type="checkbox" value="6" class="day-chk"> শনি</label>
+                <label><input type="checkbox" value="0" class="day-chk"> রবি</label>
+            </div>
+
+            <button id="setAlarmBtn">অ্যালার্ম যোগ করুন</button>
+        </div>
+
+        <!-- সেট করা অ্যালার্মগুলোর তালিকা -->
+        <div class="alarm-list-container">
+            <h3>অ্যালার্মের তালিকা:</h3>
+            <ul id="alarmList"></ul>
+        </div>
+
+        <!-- ম্যাথ চ্যালেঞ্জ সেটিং -->
+        <div class="settings">
+            <label>
+                <input type="checkbox" id="mathToggle" checked> ঘুম ভাঙাতে ম্যাথ চ্যালেঞ্জ বাধ্যতামূলক রাখুন
+            </label>
+        </div>
+
+        <!-- অ্যালার্ম বাজার সময় ম্যাথ দেখানোর জায়গা -->
+        <div id="mathContainer" class="hidden">
+            <p id="mathQuestion">অংক সমাধান করুন: ৫ + ৩ = ?</p>
+            <input type="number" id="mathAnswer" placeholder="উত্তর লিখুন">
+            <button id="submitMathBtn">অ্যালার্ম বন্ধ করুন</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
