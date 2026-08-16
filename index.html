@@ -4,162 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Alarm App</title>
-    <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
-            background: #f4f4f4; 
-            padding: 10px; 
-            margin: 0;
-        }
-        .nav-bar {
-            background: #333;
-            padding: 8px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 4px;
-        }
-        .nav-bar button {
-            background: #555;
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-        .nav-bar button.active {
-            background: #4CAF50;
-        }
-        .section {
-            display: none;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-            max-width: 350px;
-            margin: 0 auto;
-        }
-        .section.active {
-            display: block;
-        }
-        .clock-container { 
-            font-size: 28px; 
-            margin: 15px; 
-            font-weight: bold; 
-            color: #333;
-        }
-        input, select {
-            padding: 8px;
-            font-size: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin: 5px 0;
-            width: 90%;
-        }
-        .btn-main {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            width: 100%;
-        }
-        .btn-main:hover {
-            background: #45a049;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin-top: 15px;
-            text-align: left;
-        }
-        li {
-            background: #f9f9f9;
-            padding: 8px;
-            margin: 5px 0;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #ddd;
-            font-size: 13px;
-        }
-        .delete-btn {
-            background: #f44336;
-            padding: 4px 8px;
-            font-size: 12px;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        .days-container {
-            display: flex;
-            justify-content: space-around;
-            margin: 10px 0;
-            font-size: 12px;
-        }
-        /* অ্যানালগ ঘড়ি ডিজাইন */
-        .analog-clock {
-            width: 140px;
-            height: 140px;
-            border: 6px solid #333;
-            border-radius: 50%;
-            position: relative;
-            margin: 15px auto;
-            background: white;
-        }
-        .hand {
-            position: absolute;
-            bottom: 50%;
-            left: 50%;
-            transform-origin: bottom;
-            background: #333;
-            border-radius: 4px;
-        }
-        .hour-hand { width: 6px; height: 35px; background: #333; }
-        .min-hand { width: 4px; height: 50px; background: #666; }
-        .sec-hand { width: 2px; height: 60px; background: red; }
-
-        /* ম্যাথ পপ-আপ মডাল */
-        #mathModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-        }
-        .math-content {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            text-align: center;
-            max-width: 280px;
-            width: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <h2 id="appTitle">Smart Alarm App</h2>
 
-    <!-- সাউন্ড পারমিশন বাটন (অ্যালার্ম বাজানোর জন্য অত্যন্ত জরুরি) -->
-    <div id="soundActivationBanner" style="background: #ff9800; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 13px;">
+    <div id="soundActivationBanner">
         ⚠️ Tap below to enable alarm sound!
         <br>
-        <button onclick="enableSound()" style="background: white; color: #ff9800; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; margin-top: 5px; cursor: pointer;">🔔 Enable Alarm Sound</button>
+        <button onclick="enableSound()">🔔 Enable Alarm Sound</button>
     </div>
 
-    <!-- সেটিংস ও মেনুবার -->
     <div class="nav-bar">
         <button onclick="switchTab('alarm')" id="btnAlarm" class="active">Alarm</button>
         <button onclick="switchTab('clock')" id="btnClock">Clock</button>
@@ -168,299 +24,69 @@
         <button onclick="switchTab('settings')" id="btnSettings">Settings</button>
     </div>
 
-    <!-- ১. অ্যালার্ম সেকশন -->
     <div id="alarmSection" class="section active">
         <h3 id="lblSetAlarm">Set Alarm</h3>
         <input type="time" id="alarmTime">
-        
-        <label style="font-size: 13px; text-align: left; display: block; margin-top: 5px;" id="lblSelectRingtone">Select Ringtone:</label>
+        <label id="lblSelectRingtone">Select Ringtone:</label>
         <select id="ringtoneSelect">
             <option value="default">Default Beep</option>
             <option value="bell">Classic Bell</option>
-            <option value="guitar">Acoustic Melody</option>
         </select>
-        <button type="button" onclick="testSound()" style="background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 4px; margin-top: 5px; cursor: pointer; font-size: 12px;">🔊 Test Sound</button>
-
-        <div style="text-align: left; margin-top: 10px; font-size: 13px;">
-            <label id="lblSelectDays">Select Days:</label>
-            <div class="days-container">
-                <label><input type="checkbox" class="alarm-day" value="0"> Su</label>
-                <label><input type="checkbox" class="alarm-day" value="1"> Mo</label>
-                <label><input type="checkbox" class="alarm-day" value="2"> Tu</label>
-                <label><input type="checkbox" class="alarm-day" value="3"> We</label>
-                <label><input type="checkbox" class="alarm-day" value="4"> Th</label>
-                <label><input type="checkbox" class="alarm-day" value="5"> Fr</label>
-                <label><input type="checkbox" class="alarm-day" value="6"> Sa</label>
-            </div>
+        <button type="button" onclick="testSound()" class="btn-main" style="background: #2196F3;">🔊 Test Sound</button>
+        <div class="days-container">
+            <label><input type="checkbox" class="alarm-day" value="0"> Su</label>
+            <label><input type="checkbox" class="alarm-day" value="1"> Mo</label>
+            <label><input type="checkbox" class="alarm-day" value="2"> Tu</label>
+            <label><input type="checkbox" class="alarm-day" value="3"> We</label>
+            <label><input type="checkbox" class="alarm-day" value="4"> Th</label>
+            <label><input type="checkbox" class="alarm-day" value="5"> Fr</label>
+            <label><input type="checkbox" class="alarm-day" value="6"> Sa</label>
         </div>
-
         <button class="btn-main" onclick="setAlarm()" id="btnAddAlarmBtn">Add Alarm</button>
         <h4 id="lblActiveAlarms">Active Alarms:</h4>
         <ul id="alarmList"></ul>
     </div>
 
-    <!-- ২. ঘড়ি সেকশন -->
     <div id="clockSection" class="section">
         <h3 id="lblClockDisplay">Clock Display</h3>
-        <select id="clockStyle" onchange="changeClockStyle()">
-            <option value="digital" id="optDigital">Digital Clock</option>
-            <option value="analog" id="optAnalog">Analog Clock</option>
-        </select>
-        
         <div id="digitalDisplay" class="clock-container">00:00:00 AM</div>
-        
-        <div id="analogDisplay" style="display: none;">
-            <div class="analog-clock">
-                <div class="hand hour-hand" id="hourHand"></div>
-                <div class="hand min-hand" id="minHand"></div>
-                <div class="hand sec-hand" id="secHand"></div>
-            </div>
-        </div>
     </div>
 
-    <!-- ৩. স্টপওয়াচ সেকশন -->
     <div id="stopwatchSection" class="section">
         <h3 id="lblStopwatch">Stopwatch</h3>
         <div class="clock-container" id="swDisplay">00:00:00</div>
-        <button class="btn-main" onclick="startStopwatch()" style="background:#2196F3; margin-bottom:5px;" id="btnSwStart">Start</button>
-        <button class="btn-main" onclick="pauseStopwatch()" style="background:#ff9800; margin-bottom:5px;" id="btnSwPause">Pause</button>
-        <button class="btn-main" onclick="resetStopwatch()" style="background:#f44336;" id="btnSwReset">Reset</button>
+        <button class="btn-main" onclick="startStopwatch()" id="btnSwStart">Start</button>
+        <button class="btn-main" onclick="resetStopwatch()" style="background:#f44336;">Reset</button>
     </div>
 
-    <!-- ৪. কাউন্টডাউন টাইমার সেকশন -->
     <div id="timerSection" class="section">
-        <h3 id="lblTimer">Countdown Timer</h3>
-        <input type="number" id="timerSeconds" placeholder="Enter seconds" min="1">
+        <h3 id="lblTimer">Timer</h3>
+        <input type="number" id="timerSeconds" placeholder="Enter seconds">
         <button class="btn-main" onclick="startTimer()" id="btnTimerStart">Start Timer</button>
-        <div class="clock-container" id="timerDisplay" style="font-size: 25px; margin-top: 15px;">00:00</div>
+        <div class="clock-container" id="timerDisplay">00:00</div>
     </div>
 
-    <!-- ৫. সেটিংস ও ভাষা পরিবর্তন সেকশন -->
     <div id="settingsSection" class="section">
         <h3 id="lblSettings">Settings</h3>
-        <label style="font-size: 14px; text-align: left; display: block;" id="lblSelectLang">Select Language:</label>
         <select id="langSelect" onchange="changeLanguage()">
             <option value="en">English</option>
-            <option value="bn">বাংলা (Bengali)</option>
+            <option value="bn">বাংলা</option>
         </select>
     </div>
 
-    <!-- ম্যাথ পপ-আপ মডাল -->
     <div id="mathModal">
         <div class="math-content">
-            <h3 style="color: red;" id="lblRinging">🚨 ALARM RINGING! 🚨</h3>
-            <p id="lblMathInstruction">Solve 3 math problems to stop:</p>
-            <p id="mathQuestion" style="font-size: 18px; font-weight: bold;"></p>
+            <h3 id="lblRinging">🚨 ALARM RINGING! 🚨</h3>
+            <p id="mathQuestion"></p>
             <input type="number" id="mathAnswer" placeholder="Answer">
-            <button class="btn-main" onclick="checkMathAnswer()" style="margin-top:10px;" id="btnSubmit">Submit</button>
+            <button class="btn-main" onclick="checkMathAnswer()" id="btnSubmit">Submit</button>
         </div>
     </div>
 
-    <!-- অডিও এলিমেন্ট -->
     <audio id="alarmAudio" loop>
         <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
     </audio>
 
-    <script>
-        const langData = {
-            en: {
-                appTitle: "Smart Alarm App",
-                alarm: "Alarm", clock: "Clock", stopwatch: "Stopwatch", timer: "Timer", settings: "Settings",
-                setAlarm: "Set Alarm", selectRingtone: "Select Ringtone:", selectDays: "Select Days:", addAlarmBtn: "Add Alarm", activeAlarms: "Active Alarms:",
-                clockDisplay: "Clock Display", digital: "Digital Clock", analog: "Analog Clock",
-                stopwatchTitle: "Stopwatch", start: "Start", pause: "Pause", reset: "Reset",
-                timerTitle: "Countdown Timer", startTimer: "Start Timer",
-                settingsTitle: "Settings", selectLang: "Select Language:",
-                ringing: "🚨 ALARM RINGING! 🚨", mathInstruction: "Solve 3 math problems to stop:", submit: "Submit"
-            },
-            bn: {
-                appTitle: "স্মার্ট অ্যালার্ম অ্যাপ",
-                alarm: "অ্যালার্ম", clock: "ঘড়ি", stopwatch: "স্টপওয়াচ", timer: "টাইমার", settings: "সেটিংস",
-                setAlarm: "অ্যালার্ম সেট করুন", selectRingtone: "রিংটোন নির্বাচন:", selectDays: "বার নির্বাচন করুন:", addAlarmBtn: "অ্যালার্ম যোগ করুন", activeAlarms: "সক্রিয় অ্যালার্মসমূহ:",
-                clockDisplay: "ঘড়ির ডিসপ্লে", digital: "ডিজিটাল ঘড়ি", analog: "অ্যানালগ ঘড়ি",
-                stopwatchTitle: "স্টপওয়াচ", start: "শুরু", pause: "থামুন", reset: "রিসেট",
-                timerTitle: "কাউন্টডাউন টাইমার", startTimer: "টাইমার শুরু করুন",
-                settingsTitle: "সেটিংস", selectLang: "ভাষা নির্বাচন করুন:",
-                ringing: "🚨 অ্যালার্ম বাজছে! 🚨", mathInstruction: "বন্ধ করতে ৩টি ম্যাথ সমাধান করুন:", submit: "সাবমিট"
-            }
-        };
-
-        function enableSound() {
-            let audio = document.getElementById('alarmAudio');
-            audio.play().then(() => {
-                audio.pause();
-                audio.currentTime = 0;
-                document.getElementById('soundActivationBanner').style.display = 'none';
-                alert("Alarm sound enabled successfully!");
-            }).catch(e => {
-                alert("Error enabling sound. Please try again.");
-            });
-        }
-
-        function changeLanguage() {
-            let lang = document.getElementById('langSelect').value;
-            let d = langData[lang];
-
-            document.getElementById('appTitle').innerText = d.appTitle;
-            document.getElementById('btnAlarm').innerText = d.alarm;
-            document.getElementById('btnClock').innerText = d.clock;
-            document.getElementById('btnStopwatch').innerText = d.stopwatch;
-            document.getElementById('btnTimer').innerText = d.timer;
-            document.getElementById('btnSettings').innerText = d.settings;
-
-            document.getElementById('lblSetAlarm').innerText = d.setAlarm;
-            document.getElementById('lblSelectRingtone').innerText = d.selectRingtone;
-            document.getElementById('lblSelectDays').innerText = d.selectDays;
-            document.getElementById('btnAddAlarmBtn').innerText = d.addAlarmBtn;
-            document.getElementById('lblActiveAlarms').innerText = d.activeAlarms;
-
-            document.getElementById('lblClockDisplay').innerText = d.clockDisplay;
-            document.getElementById('optDigital').innerText = d.digital;
-            document.getElementById('optAnalog').innerText = d.analog;
-
-            document.getElementById('lblStopwatch').innerText = d.stopwatchTitle;
-            document.getElementById('btnSwStart').innerText = d.start;
-            document.getElementById('btnSwPause').innerText = d.pause;
-            document.getElementById('btnSwReset').innerText = d.reset;
-
-            document.getElementById('lblTimer').innerText = d.timerTitle;
-            document.getElementById('btnTimerStart').innerText = d.startTimer;
-
-            document.getElementById('lblSettings').innerText = d.settingsTitle;
-            document.getElementById('lblSelectLang').innerText = d.selectLang;
-
-            document.getElementById('lblRinging').innerText = d.ringing;
-            document.getElementById('lblMathInstruction').innerText = d.mathInstruction;
-            document.getElementById('btnSubmit').innerText = d.submit;
-        }
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.nav-bar button').forEach(btn => btn.classList.remove('active'));
-
-            if(tabName === 'alarm') {
-                document.getElementById('alarmSection').classList.add('active');
-                document.getElementById('btnAlarm').classList.add('active');
-            } else if(tabName === 'clock') {
-                document.getElementById('clockSection').classList.add('active');
-                document.getElementById('btnClock').classList.add('active');
-            } else if(tabName === 'stopwatch') {
-                document.getElementById('stopwatchSection').classList.add('active');
-                document.getElementById('btnStopwatch').classList.add('active');
-            } else if(tabName === 'timer') {
-                document.getElementById('timerSection').classList.add('active');
-                document.getElementById('btnTimer').classList.add('active');
-            } else if(tabName === 'settings') {
-                document.getElementById('settingsSection').classList.add('active');
-                document.getElementById('btnSettings').classList.add('active');
-            }
-        }
-
-        let alarms = [];
-        let ringingAlarmIndex = null;
-        let currentStep = 0;
-        let num1, num2, expectedAnswer;
-        const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-
-        function testSound() {
-            let audio = document.getElementById('alarmAudio');
-            audio.play().catch(e => alert("Please tap 'Enable Alarm Sound' banner first!"));
-            setTimeout(() => { audio.pause(); audio.currentTime = 0; }, 3000);
-        }
-
-        function updateClock() {
-            const now = new Date();
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-            let seconds = now.getSeconds();
-            let currentDay = now.getDay();
-            let ampm = hours >= 12 ? 'PM' : 'AM';
-            
-            let fHours = hours % 12;
-            fHours = fHours ? fHours : 12; 
-            let fMins = minutes < 10 ? '0' + minutes : minutes;
-            let fSecs = seconds < 10 ? '0' + seconds : seconds;
-
-            document.getElementById('digitalDisplay').innerText = `${fHours}:${fMins}:${fSecs} ${ampm}`;
-
-            let secDeg = (seconds / 60) * 360;
-            let minDeg = (minutes / 60) * 360 + (seconds/60)*6;
-            let hourDeg = (fHours / 12) * 360 + (minutes/60)*30;
-
-            document.getElementById('secHand').style.transform = `rotate(${secDeg}deg)`;
-            document.getElementById('minHand').style.transform = `rotate(${minDeg}deg)`;
-            document.getElementById('hourHand').style.transform = `rotate(${hourDeg}deg)`;
-
-            let currentTimeStr = (hours < 10 ? '0' + hours : hours) + ":" + (minutes < 10 ? '0' + minutes : minutes);
-            
-            if (seconds === 0) {
-                alarms.forEach((item, index) => {
-                    if (item.time === currentTimeStr && ringingAlarmIndex === null) {
-                        if (item.days.length === 0 || item.days.includes(currentDay)) {
-                            triggerAlarm(index);
-                        }
-                    }
-                });
-            }
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        function changeClockStyle() {
-            let style = document.getElementById('clockStyle').value;
-            if(style === 'digital') {
-                document.getElementById('digitalDisplay').style.display = 'block';
-                document.getElementById('analogDisplay').style.display = 'none';
-            } else {
-                document.getElementById('digitalDisplay').style.display = 'none';
-                document.getElementById('analogDisplay').style.display = 'block';
-            }
-        }
-
-        function setAlarm() {
-            const timeInput = document.getElementById('alarmTime').value;
-            const ringtoneInput = document.getElementById('ringtoneSelect').value;
-            if (!timeInput) { alert("Select a time!"); return; }
-            
-            let selectedDays = [];
-            document.querySelectorAll('.alarm-day:checked').forEach(cb => {
-                selectedDays.push(parseInt(cb.value));
-            });
-
-            alarms.push({ time: timeInput, ringtone: ringtoneInput, days: selectedDays });
-            displayAlarms();
-            alert("Alarm set successfully!");
-        }
-
-        function displayAlarms() {
-            const list = document.getElementById('alarmList');
-            list.innerHTML = "";
-            alarms.forEach((item, index) => {
-                let dayStr = item.days.length === 0 ? "Everyday" : item.days.map(d => dayNames[d]).join(", ");
-                let li = document.createElement('li');
-                li.innerHTML = `<span><b>${item.time}</b> [${dayStr}]</span> <button class="delete-btn" onclick="deleteAlarm(${index})">Delete</button>`;
-                list.appendChild(li);
-            });
-        }
-
-        function deleteAlarm(index) {
-            alarms.splice(index, 1);
-            displayAlarms();
-        }
-
-        function triggerAlarm(index) {
-            ringingAlarmIndex = index;
-            currentStep = 0;
-            
-            let audio = document.getElementById('alarmAudio');
-            audio.play().catch(e => console.log("Audio play blocked"));
-
-            generateMathProblem();
-            document.getElementById('mathModal').style.display = 'flex';
-        }
-
-        function generateMathProblem() {
-            num1 = Math.floor(Math.random() * 8) + 1;
-            num2 = Math.floor(Math.random() * 9) + 1;
-            expectedAnswer = num1 + num2;
-            let lang = document.getElementById('langSel
+    <script src="script.js"></script>
+</body>
+</html>
