@@ -4,89 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Alarm App</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: 'Arial', sans-serif; text-align: center; background: #fdfdfd; padding: 10px; margin: 0; }
+        .nav-bar { background: #333; padding: 10px; border-radius: 8px; display: flex; justify-content: center; gap: 5px; margin-bottom: 20px; }
+        .nav-bar button { background: #555; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; flex: 1; }
+        .nav-bar button.active { background: #4CAF50; }
+        .section { display: none; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .section.active { display: block; }
+        input, select { width: 90%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .btn-main { width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        #mathModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; }
+        .math-content { background: white; padding: 30px; border-radius: 15px; width: 85%; }
+    </style>
 </head>
 <body>
 
-    <h2 id="appTitle">Smart Alarm App</h2>
-
-    <div id="soundActivationBanner">
-        ⚠️ Tap below to enable alarm sound!
-        <br>
-        <button onclick="enableSound()">🔔 Enable Alarm Sound</button>
+    <h2>Smart Alarm App</h2>
+    
+    <div id="soundActivation" style="background: #ff9800; color: white; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+        <button onclick="enableSound()" style="padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold;">🔔 Click to Enable Alarm Sound</button>
     </div>
 
     <div class="nav-bar">
-        <button onclick="switchTab('alarm')" id="btnAlarm" class="active">Alarm</button>
-        <button onclick="switchTab('clock')" id="btnClock">Clock</button>
-        <button onclick="switchTab('stopwatch')" id="btnStopwatch">Stopwatch</button>
-        <button onclick="switchTab('timer')" id="btnTimer">Timer</button>
-        <button onclick="switchTab('settings')" id="btnSettings">Settings</button>
+        <button onclick="show('alarm')" id="b1" class="active">Alarm</button>
+        <button onclick="show('clock')" id="b2">Clock</button>
+        <button onclick="show('timer')" id="b3">Timer</button>
     </div>
 
-    <div id="alarmSection" class="section active">
-        <h3 id="lblSetAlarm">Set Alarm</h3>
+    <div id="alarm" class="section active">
         <input type="time" id="alarmTime">
-        <label id="lblSelectRingtone">Select Ringtone:</label>
-        <select id="ringtoneSelect">
-            <option value="default">Default Beep</option>
-            <option value="bell">Classic Bell</option>
-        </select>
-        <button type="button" onclick="testSound()" class="btn-main" style="background: #2196F3;">🔊 Test Sound</button>
-        <div class="days-container">
-            <label><input type="checkbox" class="alarm-day" value="0"> Su</label>
-            <label><input type="checkbox" class="alarm-day" value="1"> Mo</label>
-            <label><input type="checkbox" class="alarm-day" value="2"> Tu</label>
-            <label><input type="checkbox" class="alarm-day" value="3"> We</label>
-            <label><input type="checkbox" class="alarm-day" value="4"> Th</label>
-            <label><input type="checkbox" class="alarm-day" value="5"> Fr</label>
-            <label><input type="checkbox" class="alarm-day" value="6"> Sa</label>
+        <select id="ringtone"><option value="default">Default Beep</option></select>
+        <div style="text-align: left;">
+            <label><input type="checkbox" class="day" value="0"> Su</label>
+            <label><input type="checkbox" class="day" value="1"> Mo</label>
+            <label><input type="checkbox" class="day" value="2"> Tu</label>
+            <label><input type="checkbox" class="day" value="3"> We</label>
+            <label><input type="checkbox" class="day" value="4"> Th</label>
+            <label><input type="checkbox" class="day" value="5"> Fr</label>
+            <label><input type="checkbox" class="day" value="6"> Sa</label>
         </div>
-        <button class="btn-main" onclick="setAlarm()" id="btnAddAlarmBtn">Add Alarm</button>
-        <h4 id="lblActiveAlarms">Active Alarms:</h4>
-        <ul id="alarmList"></ul>
+        <button class="btn-main" onclick="setAlarm()">Add Alarm</button>
+        <ul id="alarmList" style="text-align: left;"></ul>
     </div>
 
-    <div id="clockSection" class="section">
-        <h3 id="lblClockDisplay">Clock Display</h3>
-        <div id="digitalDisplay" class="clock-container">00:00:00 AM</div>
+    <div id="clock" class="section">
+        <div style="font-size: 40px; font-weight: bold;" id="digital">00:00:00</div>
     </div>
 
-    <div id="stopwatchSection" class="section">
-        <h3 id="lblStopwatch">Stopwatch</h3>
-        <div class="clock-container" id="swDisplay">00:00:00</div>
-        <button class="btn-main" onclick="startStopwatch()" id="btnSwStart">Start</button>
-        <button class="btn-main" onclick="resetStopwatch()" style="background:#f44336;">Reset</button>
-    </div>
-
-    <div id="timerSection" class="section">
-        <h3 id="lblTimer">Timer</h3>
-        <input type="number" id="timerSeconds" placeholder="Enter seconds">
-        <button class="btn-main" onclick="startTimer()" id="btnTimerStart">Start Timer</button>
-        <div class="clock-container" id="timerDisplay">00:00</div>
-    </div>
-
-    <div id="settingsSection" class="section">
-        <h3 id="lblSettings">Settings</h3>
-        <select id="langSelect" onchange="changeLanguage()">
-            <option value="en">English</option>
-            <option value="bn">বাংলা</option>
-        </select>
+    <div id="timer" class="section">
+        <input type="number" id="tSec" placeholder="Seconds">
+        <button class="btn-main" onclick="startTimer()">Start</button>
+        <div id="tDisp" style="font-size: 30px;">00:00</div>
     </div>
 
     <div id="mathModal">
         <div class="math-content">
-            <h3 id="lblRinging">🚨 ALARM RINGING! 🚨</h3>
-            <p id="mathQuestion"></p>
-            <input type="number" id="mathAnswer" placeholder="Answer">
-            <button class="btn-main" onclick="checkMathAnswer()" id="btnSubmit">Submit</button>
+            <h3 style="color:red">ALARM!</h3>
+            <p id="q"></p>
+            <input type="number" id="a" placeholder="Answer">
+            <button class="btn-main" onclick="check()">Submit</button>
         </div>
     </div>
 
-    <audio id="alarmAudio" loop>
-        <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
-    </audio>
+    <audio id="audio" loop><source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg"></audio>
 
-    <script src="script.js"></script>
+    <script>
+        let alarms = [], step = 0, ans = 0;
+        function show(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-bar button').forEach(b => b.classList.remove('active'));
+            document.getElementById('b' + (id=='alarm'?1:id=='clock'?2:3)).classList.add('active');
+        }
+        function enableSound() { document.getElementById('audio').play().then(() => { document.getElementById('audio').pause(); document.getElementById('soundActivation').style.display = 'none'; }); }
+        function setAlarm() {
+            alarms.push({time: document.getElementById('alarmTime').value, days: Array.from(document.querySelectorAll('.day:checked')).map(c => c.value)});
+            updateList();
+        }
+        function updateList() {
+            document.getElementById('alarmList').innerHTML = alarms.map((a,i) => `<li>${a.time} <button onclick="alarms.splice(${i},1); updateList()">Del</button></li>`).join('');
+        }
+        setInterval(() => {
+            let now = new Date();
+            document.getElementById('digital').innerText = now.toLocaleTimeString();
+            let cur = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
+            alarms.forEach(a => { if(a.time == cur && now.getSeconds()==0) trigger(); });
+        }, 1000);
+        function trigger() { document.getElementById('audio').play(); document.getElementById('mathModal').style.display = 'flex'; gen(); }
+        function gen() { let n1=Math.floor(Math.random()*9), n2=Math.floor(Math.random()*9); ans = n1+n2; document.getElementById('q').innerText = n1+"+"+n2+"=?"; }
+        function check() { if(document.getElementById('a').value == ans) { step++; if(step>=3) { document.getElementById('audio').pause(); document.getElementById('mathModal').style.display='none'; step=0; } else gen(); } }
+        function startTimer() { let s = document.getElementById('tSec').value; setInterval(() => { document.getElementById('tDisp').innerText = s--; }, 1000); }
+    </script>
 </body>
 </html>
