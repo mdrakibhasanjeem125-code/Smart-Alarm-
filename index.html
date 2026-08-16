@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Alarm with Language & Ringtone</title>
+    <title>Smart Alarm App</title>
     <style>
         body { 
             font-family: Arial, sans-serif; 
@@ -89,7 +89,7 @@
             justify-content: space-between;
             align-items: center;
             border: 1px solid #ddd;
-            font-size: 14px;
+            font-size: 13px;
         }
         .delete-btn {
             background: #f44336;
@@ -99,6 +99,12 @@
             border: none;
             border-radius: 3px;
             cursor: pointer;
+        }
+        .days-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+            font-size: 12px;
         }
         /* অ্যানালগ ঘড়ি ডিজাইন */
         .analog-clock {
@@ -146,6 +152,13 @@
 
     <h2 id="appTitle">Smart Alarm App</h2>
 
+    <!-- সাউন্ড পারমিশন বাটন (অ্যালার্ম বাজানোর জন্য অত্যন্ত জরুরি) -->
+    <div id="soundActivationBanner" style="background: #ff9800; color: white; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 13px;">
+        ⚠️ Tap below to enable alarm sound!
+        <br>
+        <button onclick="enableSound()" style="background: white; color: #ff9800; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; margin-top: 5px; cursor: pointer;">🔔 Enable Alarm Sound</button>
+    </div>
+
     <!-- সেটিংস ও মেনুবার -->
     <div class="nav-bar">
         <button onclick="switchTab('alarm')" id="btnAlarm" class="active">Alarm</button>
@@ -160,13 +173,26 @@
         <h3 id="lblSetAlarm">Set Alarm</h3>
         <input type="time" id="alarmTime">
         
-        <label style="font-size: 13px; text-align: left; display: block; margin-top: 5px;" id="lblSelectRingtone">Select Ringtone/Sound:</label>
+        <label style="font-size: 13px; text-align: left; display: block; margin-top: 5px;" id="lblSelectRingtone">Select Ringtone:</label>
         <select id="ringtoneSelect">
             <option value="default">Default Beep</option>
             <option value="bell">Classic Bell</option>
             <option value="guitar">Acoustic Melody</option>
-            <option value="custom">Custom Phone Song</option>
         </select>
+        <button type="button" onclick="testSound()" style="background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 4px; margin-top: 5px; cursor: pointer; font-size: 12px;">🔊 Test Sound</button>
+
+        <div style="text-align: left; margin-top: 10px; font-size: 13px;">
+            <label id="lblSelectDays">Select Days:</label>
+            <div class="days-container">
+                <label><input type="checkbox" class="alarm-day" value="0"> Su</label>
+                <label><input type="checkbox" class="alarm-day" value="1"> Mo</label>
+                <label><input type="checkbox" class="alarm-day" value="2"> Tu</label>
+                <label><input type="checkbox" class="alarm-day" value="3"> We</label>
+                <label><input type="checkbox" class="alarm-day" value="4"> Th</label>
+                <label><input type="checkbox" class="alarm-day" value="5"> Fr</label>
+                <label><input type="checkbox" class="alarm-day" value="6"> Sa</label>
+            </div>
+        </div>
 
         <button class="btn-main" onclick="setAlarm()" id="btnAddAlarmBtn">Add Alarm</button>
         <h4 id="lblActiveAlarms">Active Alarms:</h4>
@@ -223,37 +249,53 @@
     <div id="mathModal">
         <div class="math-content">
             <h3 style="color: red;" id="lblRinging">🚨 ALARM RINGING! 🚨</h3>
-            <p id="lblMathInstruction">Solve 3 math problems:</p>
+            <p id="lblMathInstruction">Solve 3 math problems to stop:</p>
             <p id="mathQuestion" style="font-size: 18px; font-weight: bold;"></p>
             <input type="number" id="mathAnswer" placeholder="Answer">
             <button class="btn-main" onclick="checkMathAnswer()" style="margin-top:10px;" id="btnSubmit">Submit</button>
         </div>
     </div>
 
+    <!-- অডিও এলিমেন্ট -->
+    <audio id="alarmAudio" loop>
+        <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
+    </audio>
+
     <script>
-        // ভাষা ডিকশনারি (English & Bengali)
         const langData = {
             en: {
                 appTitle: "Smart Alarm App",
                 alarm: "Alarm", clock: "Clock", stopwatch: "Stopwatch", timer: "Timer", settings: "Settings",
-                setAlarm: "Set Alarm", selectRingtone: "Select Ringtone:", addAlarmBtn: "Add Alarm", activeAlarms: "Active Alarms:",
+                setAlarm: "Set Alarm", selectRingtone: "Select Ringtone:", selectDays: "Select Days:", addAlarmBtn: "Add Alarm", activeAlarms: "Active Alarms:",
                 clockDisplay: "Clock Display", digital: "Digital Clock", analog: "Analog Clock",
                 stopwatchTitle: "Stopwatch", start: "Start", pause: "Pause", reset: "Reset",
                 timerTitle: "Countdown Timer", startTimer: "Start Timer",
                 settingsTitle: "Settings", selectLang: "Select Language:",
-                ringing: "🚨 ALARM RINGING! 🚨", mathInstruction: "Solve 3 math problems:", submit: "Submit"
+                ringing: "🚨 ALARM RINGING! 🚨", mathInstruction: "Solve 3 math problems to stop:", submit: "Submit"
             },
             bn: {
                 appTitle: "স্মার্ট অ্যালার্ম অ্যাপ",
                 alarm: "অ্যালার্ম", clock: "ঘড়ি", stopwatch: "স্টপওয়াচ", timer: "টাইমার", settings: "সেটিংস",
-                setAlarm: "অ্যালার্ম সেট করুন", selectRingtone: "রিংটোন সিলেক্ট করুন:", addAlarmBtn: "অ্যালার্ম যোগ করুন", activeAlarms: "সক্রিয় অ্যালার্মসমূহ:",
+                setAlarm: "অ্যালার্ম সেট করুন", selectRingtone: "রিংটোন নির্বাচন:", selectDays: "বার নির্বাচন করুন:", addAlarmBtn: "অ্যালার্ম যোগ করুন", activeAlarms: "সক্রিয় অ্যালার্মসমূহ:",
                 clockDisplay: "ঘড়ির ডিসপ্লে", digital: "ডিজিটাল ঘড়ি", analog: "অ্যানালগ ঘড়ি",
                 stopwatchTitle: "স্টপওয়াচ", start: "শুরু", pause: "থামুন", reset: "রিসেট",
                 timerTitle: "কাউন্টডাউন টাইমার", startTimer: "টাইমার শুরু করুন",
                 settingsTitle: "সেটিংস", selectLang: "ভাষা নির্বাচন করুন:",
-                ringing: "🚨 অ্যালার্ম বাজছে! 🚨", mathInstruction: "৩টি ম্যাথ সমাধান করুন:", submit: "সাবমিট"
+                ringing: "🚨 অ্যালার্ম বাজছে! 🚨", mathInstruction: "বন্ধ করতে ৩টি ম্যাথ সমাধান করুন:", submit: "সাবমিট"
             }
         };
+
+        function enableSound() {
+            let audio = document.getElementById('alarmAudio');
+            audio.play().then(() => {
+                audio.pause();
+                audio.currentTime = 0;
+                document.getElementById('soundActivationBanner').style.display = 'none';
+                alert("Alarm sound enabled successfully!");
+            }).catch(e => {
+                alert("Error enabling sound. Please try again.");
+            });
+        }
 
         function changeLanguage() {
             let lang = document.getElementById('langSelect').value;
@@ -268,6 +310,7 @@
 
             document.getElementById('lblSetAlarm').innerText = d.setAlarm;
             document.getElementById('lblSelectRingtone').innerText = d.selectRingtone;
+            document.getElementById('lblSelectDays').innerText = d.selectDays;
             document.getElementById('btnAddAlarmBtn').innerText = d.addAlarmBtn;
             document.getElementById('lblActiveAlarms').innerText = d.activeAlarms;
 
@@ -291,7 +334,6 @@
             document.getElementById('btnSubmit').innerText = d.submit;
         }
 
-        // ট্যাব পরিবর্তন ফাংশন
         function switchTab(tabName) {
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.nav-bar button').forEach(btn => btn.classList.remove('active'));
@@ -314,17 +356,24 @@
             }
         }
 
-        // ঘড়ি ও অ্যালার্ম লজিক
         let alarms = [];
         let ringingAlarmIndex = null;
         let currentStep = 0;
         let num1, num2, expectedAnswer;
+        const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+        function testSound() {
+            let audio = document.getElementById('alarmAudio');
+            audio.play().catch(e => alert("Please tap 'Enable Alarm Sound' banner first!"));
+            setTimeout(() => { audio.pause(); audio.currentTime = 0; }, 3000);
+        }
 
         function updateClock() {
             const now = new Date();
             let hours = now.getHours();
             let minutes = now.getMinutes();
             let seconds = now.getSeconds();
+            let currentDay = now.getDay();
             let ampm = hours >= 12 ? 'PM' : 'AM';
             
             let fHours = hours % 12;
@@ -343,10 +392,13 @@
             document.getElementById('hourHand').style.transform = `rotate(${hourDeg}deg)`;
 
             let currentTimeStr = (hours < 10 ? '0' + hours : hours) + ":" + (minutes < 10 ? '0' + minutes : minutes);
+            
             if (seconds === 0) {
                 alarms.forEach((item, index) => {
                     if (item.time === currentTimeStr && ringingAlarmIndex === null) {
-                        triggerAlarm(index);
+                        if (item.days.length === 0 || item.days.includes(currentDay)) {
+                            triggerAlarm(index);
+                        }
                     }
                 });
             }
@@ -370,7 +422,12 @@
             const ringtoneInput = document.getElementById('ringtoneSelect').value;
             if (!timeInput) { alert("Select a time!"); return; }
             
-            alarms.push({ time: timeInput, ringtone: ringtoneInput });
+            let selectedDays = [];
+            document.querySelectorAll('.alarm-day:checked').forEach(cb => {
+                selectedDays.push(parseInt(cb.value));
+            });
+
+            alarms.push({ time: timeInput, ringtone: ringtoneInput, days: selectedDays });
             displayAlarms();
             alert("Alarm set successfully!");
         }
@@ -379,8 +436,9 @@
             const list = document.getElementById('alarmList');
             list.innerHTML = "";
             alarms.forEach((item, index) => {
+                let dayStr = item.days.length === 0 ? "Everyday" : item.days.map(d => dayNames[d]).join(", ");
                 let li = document.createElement('li');
-                li.innerHTML = `<span>${item.time} (${item.ringtone})</span> <button class="delete-btn" onclick="deleteAlarm(${index})">Delete</button>`;
+                li.innerHTML = `<span><b>${item.time}</b> [${dayStr}]</span> <button class="delete-btn" onclick="deleteAlarm(${index})">Delete</button>`;
                 list.appendChild(li);
             });
         }
@@ -393,6 +451,10 @@
         function triggerAlarm(index) {
             ringingAlarmIndex = index;
             currentStep = 0;
+            
+            let audio = document.getElementById('alarmAudio');
+            audio.play().catch(e => console.log("Audio play blocked"));
+
             generateMathProblem();
             document.getElementById('mathModal').style.display = 'flex';
         }
@@ -401,73 +463,4 @@
             num1 = Math.floor(Math.random() * 8) + 1;
             num2 = Math.floor(Math.random() * 9) + 1;
             expectedAnswer = num1 + num2;
-            let lang = document.getElementById('langSelect').value;
-            let prefix = lang === 'bn' ? `(${currentStep + 1}/3) সমাধান করুন:` : `(${currentStep + 1}/3) Solve:`;
-            document.getElementById('mathQuestion').innerText = `${prefix} ${num1} + ${num2} = ?`;
-            document.getElementById('mathAnswer').value = "";
-        }
-
-        function checkMathAnswer() {
-            let userAnswer = parseInt(document.getElementById('mathAnswer').value);
-            if (userAnswer === expectedAnswer) {
-                currentStep++;
-                if (currentStep < 3) {
-                    generateMathProblem();
-                } else {
-                    document.getElementById('mathModal').style.display = 'none';
-                    alert("Alarm stopped!");
-                    if (ringingAlarmIndex !== null) {
-                        alarms.splice(ringingAlarmIndex, 1);
-                        displayAlarms();
-                        ringingAlarmIndex = null;
-                    }
-                }
-            } else {
-                alert("Wrong answer! Try again.");
-                document.getElementById('mathAnswer').value = "";
-            }
-        }
-
-        // স্টপওয়াচ লজিক
-        let swSeconds = 0, swInterval = null;
-        function startStopwatch() {
-            if(swInterval) return;
-            swInterval = setInterval(() => {
-                swSeconds++;
-                let hrs = Math.floor(swSeconds / 3600);
-                let mins = Math.floor((swSeconds % 3600) / 60);
-                let secs = swSeconds % 60;
-                document.getElementById('swDisplay').innerText = 
-                    (hrs < 10 ? "0"+hrs : hrs) + ":" + 
-                    (mins < 10 ? "0"+mins : mins) + ":" + 
-                    (secs < 10 ? "0"+secs : secs);
-            }, 1000);
-        }
-        function pauseStopwatch() { clearInterval(swInterval); swInterval = null; }
-        function resetStopwatch() { pauseStopwatch(); swSeconds = 0; document.getElementById('swDisplay').innerText = "00:00:00"; }
-
-        // কাউন্টডাউন টাইমার লজিক
-        let timerInterval = null;
-        function startTimer() {
-            let totalSec = parseInt(document.getElementById('timerSeconds').value);
-            if(!totalSec || totalSec <= 0) { alert("Enter valid seconds!"); return; }
-            
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                let mins = Math.floor(totalSec / 60);
-                let secs = totalSec % 60;
-                document.getElementById('timerDisplay').innerText = 
-                    (mins < 10 ? "0"+mins : mins) + ":" + (secs < 10 ? "0"+secs : secs);
-                
-                if(totalSec <= 0) {
-                    clearInterval(timerInterval);
-                    alert("Timer Finished!");
-                }
-                totalSec--;
-            }, 1000);
-        }
-    </script>
-
-</body>
-    </html>
-    
+            let lang = document.getElementById('langSel
